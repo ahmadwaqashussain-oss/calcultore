@@ -1,0 +1,163 @@
+.usage-calendar {
+  background: #2a2a3e;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.usage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.usage-header h3 {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.total-usage {
+  color: #8e8ea0;
+  font-size: 12px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.calendar-day {
+  background: #3a3a52;
+  border-radius: 6px;
+  padding: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.calendar-day:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.day-number {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.day-name {
+  font-size: 9px;
+  color: #8e8ea0;
+  text-transform: uppercase;
+}
+
+.day-count {
+  font-size: 11px;
+  color: #34c759;
+  font-weight: 700;
+  margin-top: 3px;
+}
+
+/* Intensity levels */
+.calendar-day.empty {
+  background: #3a3a52;
+}
+
+.calendar-day.low {
+  background: #0e4429;
+}
+
+.calendar-day.medium {
+  background: #006d32;
+}
+
+.calendar-day.high {
+  background: #26a641;
+}
+
+.calendar-day.very-high {
+  background: #39d353;
+}
+
+.usage-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.usage-legend span {
+  color: #8e8ea0;
+  font-size: 11px;
+  margin: 0 4px;
+}
+
+.legend-item {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.legend-item.empty {
+  background: #3a3a52;
+}
+
+.legend-item.low {
+  background: #0e4429;
+}
+
+.legend-item.medium {
+  background: #006d32;
+}
+
+.legend-item.high {
+  background: #26a641;
+}
+
+.legend-item.very-high {
+  background: #39d353;
+}
+
+@media (max-width: 768px) {
+  .calendar-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .calendar-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .calendar-day {
+    min-height: 40px;
+    padding: 4px;
+  }
+
+  .day-number {
+    font-size: 12px;
+  }
+
+  .day-name {
+    font-size: 8px;
+  }
+
+  .day-count {
+    font-size: 9px;
+  }
+}

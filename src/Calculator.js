@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import './Calculator.css';
+import UsageCalendar from './UsageCalendar';
 import {
-  getSessionId,
-  getSessionIdFromUrl,
+  getBinId,
+  getBinIdFromUrl,
   saveHistoryToCloud,
   loadHistoryFromCloud,
-  getShareableUrl
-} from './cloudStorage';
+  getShareableUrl,
+  exportHistoryAsJson,
+  trackUsage,
+  getUsageData
+} from './jsonStorage';
 
 const Calculator = () => {
   const [display, setDisplay] = useState('0');
@@ -14,23 +18,21 @@ const Calculator = () => {
   const [operation, setOperation] = useState(null);
   const [waitingForOperand, setWaitingForOperand] = useState(false);
   const [history, setHistory] = useState([]);
-  const [sessionId, setSessionId] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
   const [showShareNotification, setShowShareNotification] = useState(false);
+  const [usageData, setUsageData] = useState({});
 
-  // Initialize session and load history
+  // Initialize and load history and usage data
   useEffect(() => {
-    const urlSessionId = getSessionIdFromUrl();
-    const currentSessionId = urlSessionId || getSessionId();
-    setSessionId(currentSessionId);
+    const urlBinId = getBinIdFromUrl();
+    const currentBinId = urlBinId || getBinId();
 
-    // Load history from cloud/localStorage
-    loadHistoryFromCloud(currentSessionId).then((loadedHistory) => {
-      // Always set history, even if empty, to ensure state is initialized
+    // Load history from JSON storage
+    loadHistoryFromCloud(currentBinId).then((loadedHistory) => {
       setHistory(loadedHistory);
     }).catch((error) => {
       console.error('Error loading history:', error);
-      // Even on error, try to load from localStorage directly
+      // Fallback to localStorage
       try {
         const localHistory = localStorage.getItem('calculator_history');
         if (localHistory) {
@@ -40,6 +42,9 @@ const Calculator = () => {
         console.error('Error parsing localStorage:', e);
       }
     });
+
+    // Load usage data
+    setUsageData(getUsageData());
   }, []);
 
   // Save history to localStorage immediately whenever it changes
@@ -50,15 +55,15 @@ const Calculator = () => {
     }
   }, [history]);
 
-  // Save history to cloud (asynchronous)
+  // Save history to cloud JSON storage (asynchronous)
   useEffect(() => {
-    if (history.length > 0 && sessionId) {
+    if (history.length > 0) {
       setIsSyncing(true);
-      saveHistoryToCloud(history, sessionId).then(() => {
+      saveHistoryToCloud(history).then(() => {
         setIsSyncing(false);
       });
     }
-  }, [history, sessionId]);
+  }, [history]);
 
   const inputDigit = (digit) => {
     if (waitingForOperand) {
@@ -162,6 +167,10 @@ const Calculator = () => {
       setPreviousValue(null);
       setOperation(null);
       setWaitingForOperand(true);
+
+      // Track usage
+      const updatedUsage = trackUsage();
+      setUsageData(updatedUsage);
     }
   };
 
@@ -172,7 +181,7 @@ const Calculator = () => {
   };
 
   const handleShare = () => {
-    const shareUrl = getShareableUrl(sessionId);
+    const shareUrl = getShareableUrl();
     navigator.clipboard.writeText(shareUrl).then(() => {
       setShowShareNotification(true);
       setTimeout(() => {
@@ -182,6 +191,10 @@ const Calculator = () => {
       console.error('Failed to copy:', err);
       alert(`Share this link: ${shareUrl}`);
     });
+  };
+
+  const handleExport = () => {
+    exportHistoryAsJson(history);
   };
 
   return (
@@ -222,12 +235,17 @@ const Calculator = () => {
             <button className="calculator-key key-equals" onClick={handleEquals}>=</button>
           </div>
         </div>
+
+        <UsageCalendar usageData={usageData} />
       </div>
 
       <div className="history-panel">
         <div className="history-header">
           <h2>History</h2>
           <div className="history-actions">
+            <button className="export-btn" onClick={handleExport} title="Export history as JSON">
+              📥 Export
+            </button>
             <button className="share-btn" onClick={handleShare} title="Share your history">
               🔗 Share
             </button>

@@ -131,6 +131,29 @@
 .history-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-btn {
+  background: #5856d6;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.export-btn:hover {
+  background: #7c7ae6;
+  transform: translateY(-1px);
+}
+
+.export-btn:active {
+  transform: translateY(0);
 }
 
 .share-btn {
